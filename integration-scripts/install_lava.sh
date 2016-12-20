@@ -1,6 +1,6 @@
 
 # Add jessie-backports repository
-sudo DEBIAN_FRONTEND=noninteractive cat "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list
+echo "deb http://http.debian.net/debian jessie-backports main" | sudo DEBIAN_FRONTEND=noninteractive tee -a /etc/apt/sources.list
 
 # Update the system
 sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy update
