@@ -6,6 +6,7 @@
 $build = <<SCRIPT
 cd /vagrant
 integration-scripts/install_lava.sh
+integration-scripts/configure_lava.sh
 SCRIPT
 
 Vagrant.configure(2) do |config|
