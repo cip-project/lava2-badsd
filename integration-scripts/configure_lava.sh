@@ -1,7 +1,7 @@
 # Configure Lava Server (V2 or "pipeline" jobs only)
 
-# Add Lava Server Superuser - must be run in a TTY
-#sudo lava-server manage createsuperuser --username lavauser --email=lavauser@codethink.co.uk
+# Add Lava Server Superuser
+sudo DEBIAN_FRONTEND=noninteractive lava-server manage createsuperuser --username lavauser --email=lavauser@codethink.co.uk
 
 # QEMU
 # Add a Device Type qemu and Device qemu01 for the QEMU VM
