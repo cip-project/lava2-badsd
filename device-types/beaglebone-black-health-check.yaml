@@ -1,0 +1,156 @@
+{
+    "actions": [
+        {
+            "command": "deploy_linaro_kernel",
+            "metadata": {
+                "_comment": "Adding the KernelCI type of metadata for compat",
+                "device.tree": "am335x-boneblack.dtb",
+                "image.type": "linaro",
+                "image.url": "http://images.validation.linaro.org/functional-test-images/bbb/",
+                "kernel.defconfig": "arm-omap2plus_defconfig",
+                "kernel.endian": "little",
+                "kernel.tree": "mainline",
+                "kernel.version": "vtodo",
+                "platform.fastboot": "false",
+                "test.plan": "power"
+            },
+            "parameters": {
+                "dtb": "http://images.validation.linaro.org/functional-test-images/bbb/am335x-boneblack.dtb",
+                "kernel": "http://images.validation.linaro.org/functional-test-images/bbb/zImage",
+                "ramdisk": "http://images.validation.linaro.org/functional-test-images/common/linaro-image-minimal-initramfs-genericarmv7a.cpio.gz.u-boot"
+            }
+        },
+        {
+            "command": "boot_linaro_image",
+            "parameters": {
+                "boot_cmds": [
+                    "setenv autoload no",
+                    "setenv pxefile_addr_r '0x50000000'",
+                    "setenv kernel_addr_r '0x81000000'",
+                    "setenv initrd_addr_r '0x82000000'",
+                    "setenv fdt_addr_r '0x81f00000'",
+                    "setenv initrd_high '0xffffffff'",
+                    "setenv fdt_high '0xffffffff'",
+                    "setenv loadkernel 'tftp ${kernel_addr_r} {KERNEL}'",
+                    "setenv loadinitrd 'tftp ${initrd_addr_r} {RAMDISK}; setenv initrd_size ${filesize}'",
+                    "setenv loadfdt 'tftp ${fdt_addr_r} {DTB}'",
+                    "setenv bootargs 'console=ttyO0,115200n8 root=/dev/ram0 ip=:::::eth0:dhcp'",
+                    "setenv bootcmd 'dhcp; setenv serverip {SERVER_IP}; run loadkernel; run loadinitrd; run loadfdt; bootz ${kernel_addr_r} ${initrd_addr_r} ${fdt_addr_r}'",
+                    "boot"
+                ]
+            }
+        },
+        {
+            "command": "lava_test_shell",
+            "parameters": {
+                "testdef_repos": [
+                    {
+                        "git-repo": "git://git.linaro.org/qa/test-definitions.git",
+                        "testdef": "openembedded/kernel-version.yaml"
+                    }
+                ],
+                "timeout": 2400
+            }
+        },
+        {
+            "command": "lava_command_run",
+            "parameters": {
+                "commands": [
+                    "sleep 10"
+                ],
+                "parser": "^(?P<test_case_id>[^:]+):\\s*(?P<message>w+)\\s+(?P<units>\\w+)\\s+(?P<result>\\w+)",
+                "timeout": 5000
+            }
+        },
+        {
+            "command": "submit_results_on_host",
+            "parameters": {
+                "server": "http://lava-baylibre.local:10080/RPC2/",
+                "stream": "/anonymous/lab-health/"
+            }
+        }
+    ],
+    "health-check": true,
+    "job_name": "am335x-boneblack-health",
+    "logging_level": "DEBUG",
+    "target": "am335x-boneblack",
+    "timeout": 900
+}
+#-------------------------------------------------------------------------------------------------------
+
+
+# Simple example of how to use an inline test definition, using the beaglebone-black
+device_type: beaglebone-black
+job_name: am335x-boneblack-health
+
+# Reasonable defaults for a simple job
+timeouts:
+  job:
+    minutes: 10
+  action:
+    minutes: 5
+  connection:
+    minutes: 2
+priority: medium
+visibility: public
+
+# context allows specific values to be overridden or included
+context:
+  # tell the template which architecture is being tested
+  arch: ARMv7
+
+metadata:
+  # please change these fields when modifying this job for your own tests.
+  docs-source: beaglebone-black-health-check
+  docs-filename: beaglebone-black-health-check.yaml
+
+actions:
+- deploy:
+    timeout:
+      minutes: 5
+    to: tmpfs
+    images:
+      rootfs:
+        image_arg: -drive format=raw,file={rootfs}
+        url: http://images.validation.linaro.org/functional-test-images/bbb/zImage
+        compression: gz
+    os: debian
+
+- boot:
+    method: qemu
+    media: tmpfs
+    prompts: ["root@debian:"]
+    auto_login:
+      login_prompt: "login:"
+      username: root
+
+# START-INLINE-TEST-BLOCK
+- test:
+    timeout:
+      minutes: 4
+    definitions:
+    - repository:
+        metadata:
+          format: Lava-Test Test Definition 1.0
+          name: simple-smoke-test
+          description: "smoke test the kernel"
+          os:
+          - debian
+          scope:
+          - functional
+        run:
+          steps:
+          - uname -a
+          - lshw
+          - lscpu
+          - lsblk
+          - lsusb
+          - lspci
+          - ip addr
+          - lava-test-case dpkg --shell fdisk -l
+      # remember to use -y to allow apt to proceed without interaction
+      # -q simplifies the apt output for logging.
+      from: inline
+      name: simple-smoke-test
+      path: inline/simple-smoke-test.yaml
+# END-INLINE-TEST-BLOCK
