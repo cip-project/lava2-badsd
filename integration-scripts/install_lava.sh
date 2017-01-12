@@ -3,8 +3,8 @@
 echo "deb http://http.debian.net/debian jessie-backports main" | sudo DEBIAN_FRONTEND=noninteractive tee -a /etc/apt/sources.list
 
 # Update the system
-sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy update
-
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 
 # LAVA is currently packaged for Debian unstable using Django1.8 and Postgresql. 
 # LAVA packages are now available from official Debian mirrors for Debian 

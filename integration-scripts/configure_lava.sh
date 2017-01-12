@@ -1,9 +1,9 @@
 # Configure Lava Server (V2 or "pipeline" jobs only)
 
-# Add Lava Server Superuser - must be run in a TTY
-#sudo lava-server manage createsuperuser --username lavauser --email=lavauser@codethink.co.uk
-
 # QEMU
+# Copy latest qemu.jinja file to /etc/lava-server/dispatcher-config/device-types/
+sudo DEBIAN_FRONTEND=noninteractive cp -v /vagrant/device-types/qemu.jinja2 /etc/lava-server/dispatcher-config/device-types/
+
 # Add a Device Type qemu and Device qemu01 for the QEMU VM
 cd /etc/lava-server/dispatcher-config/device-types/
 sudo DEBIAN_FRONTEND=noninteractive lava-server manage add-device-type qemu
@@ -12,6 +12,7 @@ sudo DEBIAN_FRONTEND=noninteractive lava-server manage add-device --device-type 
 # Create the Device Dictionary file for a QEMU VM and store it in ~/myqemu.dat
 cd ~
 echo "{% extends 'qemu.jinja2' %}" > myqemu.dat 
+echo "{% set no_kvm = True %}" >> myqemu.dat
 echo "{% set mac_addr = '52:54:00:12:34:59' %}" >> myqemu.dat
 echo "{% set memory = '1024' %}" >> myqemu.dat
 
@@ -27,7 +28,7 @@ sudo DEBIAN_FRONTEND=noninteractive lava-server manage add-device --device-type 
 # Create the Device Dictionary file for the Beaglebone Black and store it in ~/mybbb.dat
 cd ~
 echo "{% extends 'beaglebone-black.jinja2' %}" > mybbb.dat
-echo "{% set ssh_host = '172.16.200.165' %}" >> mybbb.dat
+echo "{% set ssh_host = '10.0.0.99' %}" >> mybbb.dat
 echo "{% set connection_command = 'telnet localhost 6000' %}" >> mybbb.dat
 
 # Import the Beaglebone Black Device Dictionary file into the LAVA2 Server
