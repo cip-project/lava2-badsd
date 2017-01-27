@@ -10,8 +10,8 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 # LAVA packages are now available from official Debian mirrors for Debian 
 # unstable. e.g. to install the master, use:
 
-# Install postgresql
-sudo DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql
+# Install postgresql & tftp
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql tftp
 
 # Install qemu & KVM
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install qemu-kvm libvirt-bin

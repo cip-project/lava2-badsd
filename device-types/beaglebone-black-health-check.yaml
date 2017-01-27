@@ -31,7 +31,7 @@ actions:
     images:
       rootfs:
         image_arg: -drive format=raw,file={rootfs}
-        url: http://images.validation.linaro.org/functional-test-images/bbb/zImage
+        url: http://localhost/test-images/bbb_zImage
         compression: gz
     os: debian
 
@@ -59,14 +59,14 @@ actions:
           - functional
         run:
           steps:
-          - uname -a
-          - lshw
-          - lscpu
-          - lsblk
-          - lsusb
-          - lspci
-          - ip addr
-          - lava-test-case dpkg --shell fdisk -l
+          - lava-test-case test-uname-command --shell uname -a
+          - lava-test-case test-lshw-command --shell lshw
+          - lava-test-case test-lscpu-command --shell lscpu
+          - lava-test-case test-dfh-command --shell df -h
+          - lava-test-case test-lsusb-command --shell lsusb
+          - lava-test-case test-lspci-command --shell lspci
+          - lava-test-case test-ipaddr-command --shell ip addr
+          - lava-test-case test-dpkg-command --shell fdisk -l
       # remember to use -y to allow apt to proceed without interaction
       # -q simplifies the apt output for logging.
       from: inline
