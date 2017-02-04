@@ -1,7 +1,10 @@
 # Configure Lava Server (V2 or "pipeline" jobs only)
 
+#BugFix: tftp error - set TFTP_DIRECTORY="/var/lib/lava/dispatcher/tmp/"
+sudo sed -ie 's/srv\/tftp/var\/lib\/lava\/dispatcher\/tmp/g' /etc/default/tftpd-hpa
+
 # QEMU
-# Copy latest qemu.jinja file to /etc/lava-server/dispatcher-config/device-types/
+# Copy latest qemu.jinja2 file to /etc/lava-server/dispatcher-config/device-types/
 sudo DEBIAN_FRONTEND=noninteractive cp -v /vagrant/device-types/qemu.jinja2 /etc/lava-server/dispatcher-config/device-types/
 
 # Add a Device Type qemu and Device qemu01 for the QEMU VM
@@ -29,7 +32,7 @@ sudo DEBIAN_FRONTEND=noninteractive lava-server manage add-device --device-type 
 cd ~
 echo "{% extends 'beaglebone-black.jinja2' %}" > mybbb.dat
 echo "{% set ssh_host = '10.0.0.50' %}" >> mybbb.dat
-echo "{% set connection_command = 'telnet localhost 6000' %}" >> mybbb.dat
+echo "{% set connection_command = 'telnet 10.0.0.50' %}" >> mybbb.dat
 
 # Import the Beaglebone Black Device Dictionary file into the LAVA2 Server
 sudo DEBIAN_FRONTEND=noninteractive lava-server manage device-dictionary --hostname bbb01 --import mybbb.dat
