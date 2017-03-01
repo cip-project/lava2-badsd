@@ -20,7 +20,7 @@ Vagrant.configure(2) do |config|
  # Forward ports for internal REST server (8888) and frontend webserver (5000)
  config.vm.network :forwarded_port, guest: 80, host: 8080
  config.vm.network :forwarded_port, guest: 443, host: 8443
- #config.vm.network "public_network"
+ config.vm.network "public_network", use_dhcp_assigned_default_route: true
 
  config.vm.provision "build", type: "shell" do |s|
    s.privileged = false
